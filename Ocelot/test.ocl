@@ -1,0 +1,18 @@
+int test = 4;
+double dbl = 5.5;
+double dbd2 = &dbl;
+int expr = 4 + 8 * 5;
+int test2;
+int testRef = &test2;
+float fff = 4.4;
+int iii2 = fff;
+
+fn main() : int
+{
+	int hello = 99;
+	bool b = true && true;
+	
+	return test;
+}
+
+main();

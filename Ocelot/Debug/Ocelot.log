@@ -1,0 +1,11 @@
+﻿  interp.cpp
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(19): warning C4018: '<': signed/unsigned mismatch
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(108): warning C4800: 'const int': forcing value to bool 'true' or 'false' (performance warning)
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(130): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<bool,BoolVariable>(const std::string &,const std::string &,int)' being compiled
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(114): warning C4800: 'const double': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(120): warning C4800: 'const float': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(150): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  main.cpp
+  Ocelot.vcxproj -> C:\Users\andre\Documents\Visual Studio 2015\Projects\Ocelot\Debug\Ocelot.exe
