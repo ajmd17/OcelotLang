@@ -1,18 +1,27 @@
-int test = 4;
-double dbl = 5.5;
-double dbd2 = &dbl;
-int expr = 4 + 8 * 5;
-int test2;
-int testRef = &test2;
-float fff = 4.4;
-int iii2 = fff;
+module myprogram.main;
 
-fn main() : int
+float rt = 4.0;
+int rt2 = 4;
+double dbl = 5.5;
+
+double dbd2 = dbl + 5;
+
+double d = 6.2;
+
+// This is a comment
+
+/*
+multiline comment
+*/
+
+string str = "Hi, this is  a test string";
+
+fn main() : int 
 {
-	int hello = 99;
-	bool b = true && true;
+	bool b = (d >= 6.2) && true;
+	bool bb = (rt2 == rt);
 	
-	return test;
+	return 0;
 }
 
 main();

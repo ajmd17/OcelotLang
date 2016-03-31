@@ -1,10 +1,60 @@
 ﻿  interp.cpp
-c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(19): warning C4018: '<': signed/unsigned mismatch
-c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(108): warning C4800: 'const int': forcing value to bool 'true' or 'false' (performance warning)
-  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(130): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<bool,BoolVariable>(const std::string &,const std::string &,int)' being compiled
-c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(114): warning C4800: 'const double': forcing value to bool 'true' or 'false' (performance warning)
-c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(120): warning C4800: 'const float': forcing value to bool 'true' or 'false' (performance warning)
-c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(150): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(52): warning C4018: '<': signed/unsigned mismatch
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(18): warning C4018: '<': signed/unsigned mismatch
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(144): warning C4018: '<': signed/unsigned mismatch
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(52): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<int,IntVariable>(const std::string &,const std::string &,int)' being compiled
+c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(209): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(901): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=IntVariable
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=IntVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(173): note: see reference to function template instantiation 'std::shared_ptr<ObjectType> std::make_shared<ObjectType,double&>(double &)' being compiled
+          with
+          [
+              ObjectType=IntVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(52): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<int,IntVariable>(const std::string &,const std::string &,int)' being compiled
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(901): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=FloatVariable
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=FloatVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(173): note: see reference to function template instantiation 'std::shared_ptr<FloatVariable> std::make_shared<ObjectType,double&>(double &)' being compiled
+          with
+          [
+              ObjectType=FloatVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(114): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<float,FloatVariable>(const std::string &,const std::string &,int)' being compiled
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(901): warning C4800: 'double': forcing value to bool 'true' or 'false' (performance warning)
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=BoolVariable
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(971): note: see reference to function template instantiation 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<double&>(double &)' being compiled
+          with
+          [
+              _Ty=BoolVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.h(173): note: see reference to function template instantiation 'std::shared_ptr<BoolVariable> std::make_shared<ObjectType,double&>(double &)' being compiled
+          with
+          [
+              ObjectType=BoolVariable
+          ]
+  c:\users\andre\documents\visual studio 2015\projects\ocelot\ocelot\interp.cpp(145): note: see reference to function template instantiation 'bool Interpreter::createIntegralVariable<bool,BoolVariable>(const std::string &,const std::string &,int)' being compiled
   Generating Code...
   Skipping... (no relevant changes detected)
   main.cpp

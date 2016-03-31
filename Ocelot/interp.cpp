@@ -3,7 +3,6 @@
 #include "variable.h"
 #include "base_type_names.h"
 #include "exception_types.h"
-#include "reserved_keywords.h"
 
 #include <iostream>
 #include <memory>
@@ -29,6 +28,10 @@ void Interpreter::exec()
 			if (tokens[0] == TYPE_INT)
 			{
 				std::string varName = tokens.at(1);
+
+				std::string reason = "";
+				bool legalName = isLegalIdentifierName(varName, reason);
+				debugAssert(legalName, i, BadSyntaxException("Illegal name for identifier: \"" + varName + "\": " + reason));
 
 				ObjectPtr tmp = NULL;
 				debugAssert(!varCreated(varName, tmp), i, AlreadyDeclaredException("The variable \"" + varName + "\" has already been declared!"));
@@ -57,6 +60,10 @@ void Interpreter::exec()
 			{
 				std::string varName = tokens.at(1);
 
+				std::string reason = "";
+				bool legalName = isLegalIdentifierName(varName, reason);
+				debugAssert(legalName, i, BadSyntaxException("Illegal name for identifier: \"" + varName + "\": " + reason));
+
 				ObjectPtr tmp = NULL;
 				debugAssert(!varCreated(varName, tmp), i, AlreadyDeclaredException("The variable \"" + varName + "\" has already been declared!"));
 
@@ -84,6 +91,10 @@ void Interpreter::exec()
 			{
 				std::string varName = tokens.at(1);
 
+				std::string reason = "";
+				bool legalName = isLegalIdentifierName(varName, reason);
+				debugAssert(legalName, i, BadSyntaxException("Illegal name for identifier: \"" + varName + "\": " + reason));
+
 				ObjectPtr tmp = NULL;
 				debugAssert(!varCreated(varName, tmp), i, AlreadyDeclaredException("The variable \"" + varName + "\" has already been declared!"));
 
@@ -110,6 +121,10 @@ void Interpreter::exec()
 			else if (tokens[0] == TYPE_BOOL)
 			{
 				std::string varName = tokens.at(1);
+
+				std::string reason = "";
+				bool legalName = isLegalIdentifierName(varName, reason);
+				debugAssert(legalName, i, BadSyntaxException("Illegal name for identifier: \"" + varName + "\": " + reason));
 
 				ObjectPtr tmp = NULL;
 				debugAssert(!varCreated(varName, tmp), i, AlreadyDeclaredException("The variable \"" + varName + "\" has already been declared!"));

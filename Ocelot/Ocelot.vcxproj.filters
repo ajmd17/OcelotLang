@@ -19,9 +19,6 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{89501160-4847-40a8-b407-a540988c0d79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Lexer">
-      <UniqueIdentifier>{027318a7-cee0-4366-a0b3-435dc416cabc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Interpreter">
       <UniqueIdentifier>{1949d92b-1f28-4bb2-a436-d4cdbb02e96d}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="Source Files\Exception">
       <UniqueIdentifier>{69baecd1-bf9b-4cf1-af2d-e2bd6bc99ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lexer">
+      <UniqueIdentifier>{027318a7-cee0-4366-a0b3-435dc416cabc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

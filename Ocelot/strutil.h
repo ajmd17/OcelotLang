@@ -11,6 +11,15 @@
 #include <regex>
 #include <iostream>
 
+template <typename T>
+inline bool parse(const std::string &str, T &out)
+{
+	std::stringstream ss(str);
+	if ((ss >> out).fail() || !(ss >> std::ws).eof())
+		return false;
+	return true;
+}
+
 // trim from start
 static inline std::string &ltrim(std::string &s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
@@ -26,6 +35,35 @@ static inline std::string &rtrim(std::string &s) {
 // trim from both ends
 static inline std::string &trim(std::string &s) {
 	return ltrim(rtrim(s));
+}
+
+bool isNumber(const std::string &s)
+{
+	double tmp = 0.0;
+	return parse<double>(s, tmp);//c >= 48 && c <= 57;
+}
+
+bool isOperator(const std::string &str)
+{
+	int slen = str.length();
+	return	str == "^" || str == "*" || str == "/" || str == "%" ||
+		str == "+" || str == "-" ||
+		str == "<<" || str == ">>" ||
+		str == "<" || str == ">" ||
+		str == "<=" || str == ">=" ||
+		str == "==" || str == "!=" ||
+		str == "&&" || str == "||" ||
+		str == "(" || str == ")";
+}
+
+bool isOperatorStart(const char &c)
+{
+	return	c == '^' || c == '*' || c == '/' || c == '%' ||
+		c == '+' || c == '-' ||
+		c == '<' || c == '>' ||
+		c == '=' || c == '!' ||
+		c == '&' || c == '|' ||
+		c == '(' ||c == ')';
 }
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
@@ -49,20 +87,93 @@ std::string removeWhitespace(const std::string &s) {
 	for (size_t i = 0; i < s.length(); i++) {
 
 		char c = s[i];
-		if (c == '\"') {
+		if (c == '\"') {  // in string
 			i++;
-			while (s[i] != '\"') { workingStr += s[i]; i++; }
+			while (s[i] != '\"')
+			{
+				if (s[i] != '\t' && s[i] != '\n')
+					workingStr += s[i]; i++;
+			}
 		}
 		else {
 			if (c != '\t' && c != '\n')
 			{
-				if (!(c == ' ' && s[i-1] == ' '))
+				if (i > 0)
+				{
+					if (!(c == ' ' && s[i - 1] == ' '))
+						workingStr += s[i];
+				}
+				else
 					workingStr += s[i];
 			}
 		}
 	}
-
+	//cout << workingStr << "\n";
 	return workingStr;
+}
+
+std::vector<std::string> splitExpression(const std::string & s) {
+	std::vector<std::string> res;
+
+	std::string workingStr = "";
+
+	bool inComment = false;
+
+	for (size_t i = 0; i<s.length(); i++) {
+
+		char c = s[i];
+
+		if (s[i] == ' ') {
+			if (workingStr != "") {
+				res.push_back(std::string(workingStr));
+				workingStr = "";
+			}
+		}
+		else if (i < s.length()-1 && ((s[i] == '&' && s[i + 1] == '&') ||
+			(s[i] == '|' && s[i + 1] == '|') ||
+			(s[i] == '=' && s[i + 1] == '=') ||
+			(s[i] == '!' && s[i + 1] == '=') ||
+			(s[i] == '>' && s[i + 1] == '=') ||
+			(s[i] == '<' && s[i + 1] == '=')))
+		{
+			if (workingStr != "") {
+				res.push_back(std::string(workingStr));
+				workingStr = "";
+			}
+			workingStr += s[i];
+			workingStr += s[++i];
+			res.push_back(std::string(workingStr));
+			workingStr = "";
+		}
+		else if (s[i] == '+' || 
+			s[i] == '/' || 
+			s[i] == '*' || 
+			s[i] == '>' || 
+			s[i] == '<' || 
+			s[i] == '(' || 
+			s[i] == ')' || 
+			(s[i] == '-' && i < s.length()-1 && s[i+1] == ' ')) // this is to make sure that (2 != -1) doesn't become (2 != - 1)
+		{
+			if (workingStr != "") {
+				res.push_back(std::string(workingStr));
+				workingStr = "";
+			}
+			workingStr += s[i];
+			res.push_back(std::string(workingStr));
+			workingStr = "";
+		}
+		else
+		{
+			workingStr += s[i];
+		}
+		
+	}
+
+	res.push_back(std::string(workingStr));
+	workingStr = "";
+
+	return res;
+
 }
 
 std::vector<std::string> codeSplit(const std::string & s) {
@@ -99,7 +210,9 @@ std::vector<std::string> codeSplit(const std::string & s) {
 		
 
 		else if (c == '/'  && s[i + 1] == '/') { // one line comment
-			i += 2; // to skip the / character also
+			workingStr = removeWhitespace(workingStr);
+			res.push_back(std::string(workingStr));
+			workingStr = "";
 			while (s[i] != '\n') { i++; }
 		}
 		else {
@@ -107,8 +220,9 @@ std::vector<std::string> codeSplit(const std::string & s) {
 		}
 	}
 
-	std::cout << removeWhitespace(workingStr) << "\n";
-	res.push_back(trim(workingStr));
+	workingStr = removeWhitespace(workingStr);
+	res.push_back(std::string(workingStr));
+	workingStr = "";
 
 	return res;
 
@@ -137,15 +251,6 @@ std::vector<std::string> splitQuotes(const std::string &s, char delim) {
 	res.push_back(workingStr);
 
 	return res;
-}
-
-template <typename T>
-inline bool parse(const std::string &str, T &out)
-{
-	std::stringstream ss(str);
-	if ((ss >> out).fail() || !(ss >> std::ws).eof())
-		return false;
-	return true;
 }
 
 #endif

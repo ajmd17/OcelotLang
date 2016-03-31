@@ -11,6 +11,8 @@
 #include "exception_types.h"
 #include "base_type_names.h"
 #include "shunting-yard.h"
+#include "reserved_keywords.h"
+#include "variable.h"
 
 class Interpreter
 {
@@ -35,6 +37,41 @@ private:
 		return false;
 	}
 
+	bool isLegalIdentifierName(const std::string &varName, std::string &outMessage)
+	{
+		// check all reserved keywords
+		int numKeywords = sizeof(keywords) / sizeof(std::string);
+		for (int i = 0; i < numKeywords; i++)
+		{
+			if (varName == keywords[i]) {
+				outMessage = "Reserved keyword.";
+				return false;
+			}
+		}
+
+		for (int i = 0; i < varName.length() - 1; i++) // do not count terminator character
+		{
+			char c = varName[i];
+			if (i == 0)
+			{
+				// do not allow a variable to start with a number
+				if (!(c >= 65 && c <= 90 || c >= 97 && c <= 122 || c == 95)) { // only allow uppercase or lowercase letters and underscores
+					outMessage = "Must begin with either a capital letter, lowercase letter, or underscore.";
+					return false;
+				}
+			}
+			else
+			{
+				if (!(c >= 48 && c <= 57 || c >= 65 && c <= 90 || c >= 97 && c <= 122 || c == 95)) {
+					outMessage = "Contains invalid characters.";
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	void debugAssert(bool condition, int line, const BaseException &exception)
 	{
 		if (!condition)
@@ -53,7 +90,7 @@ private:
 	}
 
 	template <class BaseType, class ObjectType>
-	typename std::enable_if<std::is_base_of<Object, ObjectType>::value, bool>::type
+	typename std::enable_if<std::is_base_of<Variable<BaseType>, ObjectType>::value, bool>::type
 
 		createIntegralVariable(const std::string &name, const std::string &data, int lineNum)
 	{
@@ -69,6 +106,11 @@ private:
 					// now we make sure that the variable exists
 					string refVariableName = dataSplit[0].substr(1); // to cut off the '&'
 
+					if (dataSplit.size() != 1) {
+						error(lineNum, BadSyntaxException("Variable \"" + name + "\" not correctly initialized as a reference to \"" + refVariableName + "\""));
+						return false;
+					}
+
 					ObjectPtr outObject = NULL;
 					if (!varCreated(refVariableName, outObject))
 						error(lineNum, UndeclaredException("The referenced variable \"" + refVariableName + "\" does not exist!"));
@@ -81,63 +123,11 @@ private:
 							// initialize the object from reference
 							ObjectPtr &newVariable = outObject;
 							objects.insert(std::pair<string, ObjectPtr>(name, newVariable));
+
 							return true;
 						}
 						else
 							error(lineNum, CastException("The variable \"" + refVariableName + "\" is not directly compatible with the variable \"" + name + "\" as a reference."));
-					}
-				}
-				else
-				{
-					// search all available variable names to see if it is creating a copy
-					string refVariableName = dataSplit[0];
-					std::shared_ptr<ObjectType> otherObjectCast = NULL;
-
-					ObjectPtr outObject = NULL;
-					if (varCreated(refVariableName, outObject))
-					{
-						// make sure the object is compatible with the variable type.
-
-						string objType = outObject->getTypeInfo().getTypeName();
-						BaseType copyVar = 0;
-						bool completeCopy = false;
-
-						// try to detect object 
-						if (objType == TYPE_INT) {
-							if (std::shared_ptr<IntVariable> otherObjectCastInt = std::dynamic_pointer_cast<IntVariable>(outObject)) {
-								if (copyVar = static_cast<BaseType>(otherObjectCastInt->getData()))
-									otherObjectCast = std::make_shared<ObjectType>(copyVar);
-							}
-						} 
-						else if (objType == TYPE_DOUBLE) {
-							if (std::shared_ptr<DoubleVariable> otherObjectCastDouble = std::dynamic_pointer_cast<DoubleVariable>(outObject)) {
-								if (copyVar = static_cast<BaseType>(otherObjectCastDouble->getData()))
-									otherObjectCast = std::make_shared<ObjectType>(copyVar);
-							}
-						}
-						else if (objType == TYPE_FLOAT) {
-							if (std::shared_ptr<FloatVariable> otherObjectCastFloat = std::dynamic_pointer_cast<FloatVariable>(outObject)) {
-								if (copyVar = static_cast<BaseType>(otherObjectCastFloat->getData()))
-									otherObjectCast = std::make_shared<ObjectType>(copyVar);
-							}
-						}
-						else if (objType == TYPE_BOOL) {
-							if (std::shared_ptr<BoolVariable> otherObjectCastBool = std::dynamic_pointer_cast<BoolVariable>(outObject)) {
-								if (copyVar = static_cast<BaseType>(otherObjectCastBool->getData()))
-									otherObjectCast = std::make_shared<ObjectType>(copyVar);
-							}
-						} else {
-							otherObjectCast = std::dynamic_pointer_cast<ObjectType>(outObject); // try to cast by object finally
-						}
-
-						if (otherObjectCast != NULL)
-						{
-							ObjectPtr newVariable = otherObjectCast;
-							objects.insert(std::pair<string, ObjectPtr>(name, newVariable));
-							return true;
-						}
-						else
-							error(lineNum, CastException("The variable \"" + refVariableName + "\" is not directly compatible with the variable \"" + name + "\""));
 					}
 				}
 			}
@@ -146,9 +136,79 @@ private:
 
 			double ans = 0;
 			try {
-				ans = calculator::calculate(data.c_str());
+				map<string, double> expressionMap;
+
+				// break up the expression
+				string newExpression = "";
+				vector<string> expressionSplit = splitExpression(data);
+				for (int i = 0; i < expressionSplit.size(); i++)
+				{
+					if (isNumber(expressionSplit[i]))
+						newExpression += expressionSplit[i] + " ";
+					else if (isOperator(expressionSplit[i]))
+						newExpression += expressionSplit[i] + " ";
+					else if (expressionSplit[i] == "true" || expressionSplit[i] == "false")
+						newExpression += expressionSplit[i];
+					else
+					{
+						// lastly, check if a variable copy was used in the equation
+
+						// search all available variable names to see if it is creating a copy
+						string refVariableName = expressionSplit[i];
+						std::shared_ptr<ObjectType> otherObjectCast = NULL;
+
+						ObjectPtr outObject = NULL;
+						if (varCreated(refVariableName, outObject))
+						{
+							// make sure the object is compatible with the variable type.
+							string objType = outObject->getTypeInfo().getTypeName();
+							//BaseType copyVar = 0;
+							double copyVar = 0.0;
+							bool completeCopy = false;
+
+							// try to detect object
+							if (objType == TYPE_INT) {
+								if (std::shared_ptr<IntVariable> otherObjectCastInt = std::dynamic_pointer_cast<IntVariable>(outObject)) {
+									if (copyVar = static_cast<double>(otherObjectCastInt->getData()))
+										otherObjectCast = std::make_shared<ObjectType>(copyVar);
+								}
+							}
+							else if (objType == TYPE_DOUBLE) {
+								if (std::shared_ptr<DoubleVariable> otherObjectCastDouble = std::dynamic_pointer_cast<DoubleVariable>(outObject)) {
+									if (copyVar = static_cast<double>(otherObjectCastDouble->getData()))
+										otherObjectCast = std::make_shared<ObjectType>(copyVar);
+								}
+							}
+							else if (objType == TYPE_FLOAT) {
+								if (std::shared_ptr<FloatVariable> otherObjectCastFloat = std::dynamic_pointer_cast<FloatVariable>(outObject)) {
+									if (copyVar = static_cast<double>(otherObjectCastFloat->getData()))
+										otherObjectCast = std::make_shared<ObjectType>(copyVar);
+								}
+							}
+							else if (objType == TYPE_BOOL) {
+								if (std::shared_ptr<BoolVariable> otherObjectCastBool = std::dynamic_pointer_cast<BoolVariable>(outObject)) {
+									if (copyVar = static_cast<double>(otherObjectCastBool->getData()))
+										otherObjectCast = std::make_shared<ObjectType>(copyVar);
+								}
+							}
+							else {
+								otherObjectCast = std::dynamic_pointer_cast<ObjectType>(outObject); // try to cast by object finally
+							}
+
+							if (otherObjectCast != NULL)
+							{
+								expressionMap[refVariableName] = copyVar;//otherObjectCast->getData();
+								newExpression += refVariableName + " ";
+							}
+							else
+								error(lineNum, CastException("The variable \"" + refVariableName + "\" is not directly compatible with the variable \"" + name + "\""));
+						}
+					}
+				}
+				ans = calculator::calculate(newExpression.c_str(), expressionMap.size() > 0 ? &expressionMap : 0);
 				baseVariable = static_cast<BaseType>(ans);
-				cout << baseVariable << "\n";
+				cout << name << ": " << baseVariable << "\n";
+				cout << "EXPRESSION: " << newExpression << "\n";
 				// initialize the object from expression
 				ObjectPtr newVariable = std::make_shared<ObjectType>(baseVariable);
 				objects.insert(std::pair<string, ObjectPtr>(name, newVariable));

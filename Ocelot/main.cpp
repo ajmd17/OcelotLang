@@ -16,9 +16,9 @@ int main(int argc, char** argv)
 	std::string str((std::istreambuf_iterator<char>(t)),
 		std::istreambuf_iterator<char>());
 
-
 	Interpreter interp(str);
 	interp.exec();
+
 
 
 	FloatVariable f(3.99f);
